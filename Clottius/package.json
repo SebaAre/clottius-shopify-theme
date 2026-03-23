@@ -1,0 +1,11 @@
+{
+  "name": "clottius",
+  "version": "1.0.0",
+  "description": "Clottius - Minimal Streetwear Shopify Theme",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/clottius.css -o ./assets/clottius.min.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
