@@ -9,12 +9,17 @@
  */
 {
   "sections": {
-    "main": {
+    "hero": {
       "type": "hello-world",
+      "settings": {}
+    },
+    "products": {
+      "type": "featured-products",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "hero",
+    "products"
   ]
 }
