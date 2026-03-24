@@ -12,14 +12,9 @@
     "hero": {
       "type": "hello-world",
       "settings": {}
-    },
-    "products": {
-      "type": "featured-products",
-      "settings": {}
     }
   },
   "order": [
-    "hero",
-    "products"
+    "hero"
   ]
 }
