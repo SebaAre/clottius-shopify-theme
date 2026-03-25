@@ -16,13 +16,12 @@
       </shopify-account>
     {% endif %}
 
-    <a href="{{ routes.cart_url }}">
+    <button id="open-cart" aria-label="Open cart" style="background:none;border:none;cursor:pointer;padding:0;">
       {% if cart.item_count > 0 %}
         <sup>{{ cart.item_count }}</sup>
       {% endif %}
-
       {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+    </button>
   </div>
 </header>
 
