@@ -968,6 +968,10 @@ video {
   line-height: 1.75rem;
 }
 
+.text-\[12px\] {
+  font-size: 12px;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -1062,6 +1066,14 @@ video {
 
 .placeholder-black\/30::placeholder {
   color: rgb(0 0 0 / 0.3);
+}
+
+.placeholder-black\/50::-moz-placeholder {
+  color: rgb(0 0 0 / 0.5);
+}
+
+.placeholder-black\/50::placeholder {
+  color: rgb(0 0 0 / 0.5);
 }
 
 .opacity-40 {

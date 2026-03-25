@@ -5,18 +5,18 @@
     <!-- Brand -->
     <div class="flex flex-col gap-4">
       <a href="{{ routes.root_url }}" class="text-xl font-bold tracking-tighter uppercase">Clottius</a>
-      <p class="text-xs text-black/50 leading-relaxed tracking-wide">
+      <p class="text-sm text-black/50 leading-relaxed tracking-wide">
         {{ section.settings.brand_description }}
       </p>
     </div>
 
     <!-- Shop -->
     <div class="flex flex-col gap-4">
-      <span class="text-[10px] font-bold tracking-widest uppercase">Shop</span>
+      <span class="text-[12px] font-bold tracking-widest uppercase">Shop</span>
       <ul class="flex flex-col gap-3">
         {% for link in section.settings.shop_menu.links %}
           <li>
-            <a href="{{ link.url }}" class="text-xs tracking-widest uppercase text-black/60 hover:opacity-50 transition-opacity duration-300">
+            <a href="{{ link.url }}" class="text-sm tracking-widest uppercase text-black/60 hover:opacity-50 transition-opacity duration-300">
               {{ link.title }}
             </a>
           </li>
@@ -26,11 +26,11 @@
 
     <!-- Help -->
     <div class="flex flex-col gap-4">
-      <span class="text-[10px] font-bold tracking-widest uppercase">Help</span>
+      <span class="text-[12px] font-bold tracking-widest uppercase">Help</span>
       <ul class="flex flex-col gap-3">
         {% for link in section.settings.help_menu.links %}
           <li>
-            <a href="{{ link.url }}" class="text-xs tracking-widest uppercase text-black/60 hover:opacity-50 transition-opacity duration-300">
+            <a href="{{ link.url }}" class="text-sm tracking-widest uppercase text-black/60 hover:opacity-50 transition-opacity duration-300">
               {{ link.title }}
             </a>
           </li>
@@ -40,8 +40,8 @@
 
     <!-- Newsletter -->
     <div class="flex flex-col gap-4">
-      <span class="text-[10px] font-bold tracking-widest uppercase">Newsletter</span>
-      <p class="text-xs text-black/50 tracking-wide">Get updates on new drops.</p>
+      <span class="text-[12px] font-bold tracking-widest uppercase">Newsletter</span>
+      <p class="text-sm text-black/50 tracking-wide">Get updates on new drops.</p>
       {% form 'customer' %}
         <input type="hidden" name="contact[tags]" value="newsletter">
         <div class="flex items-center border-b border-black pb-1 gap-2 mt-2">
@@ -49,15 +49,15 @@
             type="email"
             name="contact[email]"
             placeholder="Your email"
-            class="flex-1 bg-transparent text-xs tracking-widest uppercase placeholder-black/30 outline-none py-1"
+            class="flex-1 bg-transparent text-sm tracking-widest uppercase placeholder-black/50 outline-none py-1"
             required
           >
-          <button type="submit" class="text-[10px] font-bold tracking-widest uppercase hover:opacity-50 transition-opacity duration-300 shrink-0">
+          <button type="submit" class="text-[12px] font-bold tracking-widest uppercase hover:opacity-50 transition-opacity duration-300 shrink-0">
             Subscribe
           </button>
         </div>
         {%- if form.posted_successfully? -%}
-          <p class="text-[10px] tracking-widest uppercase text-black/40 mt-3">Thank you for subscribing.</p>
+          <p class="text-[12px] tracking-widest uppercase text-black/50 mt-3">Thank you for subscribing.</p>
         {%- endif -%}
       {% endform %}
     </div>
@@ -66,7 +66,7 @@
 
   <!-- Bottom bar -->
   <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-    <p class="text-[10px] tracking-widest uppercase text-black/40">
+    <p class="text-[12px] tracking-widest uppercase text-black/50">
       &copy; {{ 'now' | date: '%Y' }} sebastian-arellano-dev. Built with Shopify &amp; Tailwind.
     </p>
     {% if section.settings.show_payment_icons %}
