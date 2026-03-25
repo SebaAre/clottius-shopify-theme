@@ -1,4 +1,4 @@
-<header class="site-header">
+<header class="site-header" data-template="{{ template.name }}">
   <h2 class="header__title">
     <a href="{{ routes.root_url }}">Clottius</a>
   </h2>
@@ -17,10 +17,10 @@
     {% endif %}
 
     <button id="open-cart" aria-label="Open cart" style="background:none;border:none;cursor:pointer;padding:0;">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
       {{ 'icon-cart.svg' | inline_asset_content }}
+      {% if cart.item_count > 0 %}
+        <span id="cart-count">{{ cart.item_count }}</span>
+      {% endif %}
     </button>
   </div>
 </header>
@@ -37,16 +37,26 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: transparent;
+    background: #000;
     color: #fff;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    border-bottom: 1px solid transparent;
   }
+
+  .site-header.is-scrolled {
+    background: #fff;
+    color: #000;
+    border-bottom-color: #f3f4f6;
+  }
+
   .site-header .header__title a {
-    font-size: 1.25rem;
+    font-size: 1.625rem;
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     text-decoration: none;
-    color: #fff;
+    color: inherit;
+    transition: color 0.3s ease;
   }
   .site-header .header__menu {
     display: flex;
@@ -58,7 +68,7 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     text-decoration: none;
-    color: #fff;
+    color: inherit;
     opacity: 0.8;
     transition: opacity 0.2s;
   }
@@ -70,28 +80,84 @@
     gap: 1.5rem;
     align-items: center;
   }
-  .site-header .header__icons a {
+  .site-header .header__icons a,
+  .site-header .header__icons button {
     position: relative;
     text-decoration: none;
-    color: #fff;
+    color: inherit;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .site-header .header__icons a sup {
+  .site-header #open-cart {
+    position: relative;
+  }
+
+  #cart-count {
     position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
-    font-size: 0.65rem;
+    top: -6px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    color: #000;
+    font-size: 9px;
+    font-weight: 600;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    pointer-events: none;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  .site-header.is-scrolled #cart-count {
+    background: #000;
+    color: #fff;
   }
   .site-header svg {
-    width: 1.5rem;
+    width: 2rem;
     fill: none;
-    stroke: #fff;
+    stroke: currentColor;
     stroke-width: 1.5;
+    transition: stroke 0.3s ease;
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+
+    const isHomepage = header.dataset.template === 'index';
+
+    function update(animate) {
+      const shouldScroll = !isHomepage || window.scrollY > 50;
+
+      if (!animate) {
+        header.style.transition = 'none';
+      }
+
+      if (shouldScroll) {
+        header.classList.add('is-scrolled');
+      } else {
+        header.classList.remove('is-scrolled');
+      }
+
+      if (!animate) {
+        // Force reflow then restore transition
+        header.offsetHeight;
+        header.style.transition = '';
+      }
+    }
+
+    // Set initial state without animation to avoid flash on load
+    update(false);
+
+    window.addEventListener('scroll', function () { update(true); }, { passive: true });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
