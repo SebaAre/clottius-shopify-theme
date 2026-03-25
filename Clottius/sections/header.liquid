@@ -1,6 +1,6 @@
-<header>
+<header class="site-header">
   <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
+    <a href="{{ routes.root_url }}">Clottius</a>
   </h2>
 
   <div class="header__menu">
@@ -27,33 +27,70 @@
 </header>
 
 {% stylesheet %}
-  header {
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
     height: 5rem;
+    padding: 0 var(--page-margin);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: transparent;
+    color: #fff;
   }
-  header a {
+  .site-header .header__title a {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #fff;
+  }
+  .site-header .header__menu {
+    display: flex;
+    gap: 2rem;
+  }
+  .site-header .header__menu a {
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #fff;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  .site-header .header__menu a:hover {
+    opacity: 1;
+  }
+  .site-header .header__icons {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  .site-header .header__icons a {
     position: relative;
     text-decoration: none;
-    color: var(--color-foreground);
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  header a sup {
+  .site-header .header__icons a sup {
     position: absolute;
     left: 100%;
     overflow: hidden;
     max-width: var(--page-margin);
+    font-size: 0.65rem;
   }
-  header svg {
-    width: 2rem;
-  }
-  header .header__menu,
-  header .header__icons {
-    display: flex;
-    gap: 1rem;
+  .site-header svg {
+    width: 1.5rem;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.5;
   }
 {% endstylesheet %}
 
