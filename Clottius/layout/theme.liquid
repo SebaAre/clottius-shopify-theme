@@ -26,13 +26,18 @@
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
+    <meta http-equiv="Content-Security-Policy" content="object-src 'none';">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
     {{ content_for_header }}
   </head>
 
   <body>
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="MainContent" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
 

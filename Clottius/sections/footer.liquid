@@ -45,8 +45,10 @@
       {% form 'customer' %}
         <input type="hidden" name="contact[tags]" value="newsletter">
         <div class="flex items-center border-b border-black pb-1 gap-2 mt-2">
+          <label for="newsletter-email" class="visually-hidden">Email</label>
           <input
             type="email"
+            id="newsletter-email"
             name="contact[email]"
             placeholder="Your email"
             class="flex-1 bg-transparent text-sm tracking-widest uppercase placeholder-black/50 outline-none py-1"
