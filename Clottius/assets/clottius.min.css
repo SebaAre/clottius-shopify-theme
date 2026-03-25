@@ -1238,6 +1238,10 @@ video {
   color: rgb(0 0 0 / 0.6);
 }
 
+.text-black\/75 {
+  color: rgb(0 0 0 / 0.75);
+}
+
 .underline {
   text-decoration-line: underline;
 }

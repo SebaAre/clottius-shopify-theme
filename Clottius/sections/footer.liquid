@@ -5,7 +5,7 @@
     <!-- Brand -->
     <div class="flex flex-col gap-4">
       <a href="{{ routes.root_url }}" class="text-xl font-bold tracking-tighter uppercase">Clottius</a>
-      <p class="text-sm text-black/50 leading-relaxed tracking-wide">
+      <p class="text-sm text-black/75 leading-relaxed tracking-wide">
         {{ section.settings.brand_description }}
       </p>
     </div>
@@ -41,7 +41,7 @@
     <!-- Newsletter -->
     <div class="flex flex-col gap-4">
       <span class="text-[12px] font-bold tracking-widest uppercase">Newsletter</span>
-      <p class="text-sm text-black/50 tracking-wide">Get updates on new drops.</p>
+      <p class="text-sm text-black/75 tracking-wide">Get updates on new drops.</p>
       {% form 'customer' %}
         <input type="hidden" name="contact[tags]" value="newsletter">
         <div class="flex items-center border-b border-black pb-1 gap-2 mt-2">
@@ -59,7 +59,7 @@
           </button>
         </div>
         {%- if form.posted_successfully? -%}
-          <p class="text-[12px] tracking-widest uppercase text-black/50 mt-3">Thank you for subscribing.</p>
+          <p class="text-[12px] tracking-widest uppercase text-black/75 mt-3">Thank you for subscribing.</p>
         {%- endif -%}
       {% endform %}
     </div>
@@ -68,7 +68,7 @@
 
   <!-- Bottom bar -->
   <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-    <p class="text-[12px] tracking-widest uppercase text-black/50">
+    <p class="text-[12px] tracking-widest uppercase text-black/75">
       &copy; {{ 'now' | date: '%Y' }} sebastian-arellano-dev. Built with Shopify &amp; Tailwind.
     </p>
     {% if section.settings.show_payment_icons %}
