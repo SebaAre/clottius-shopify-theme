@@ -1,55 +1,111 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+<footer class="full-width bg-white text-black border-t border-gray-100 pt-16 pb-8 px-6">
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+
+    <!-- Brand -->
+    <div class="flex flex-col gap-4">
+      <a href="{{ routes.root_url }}" class="text-xl font-bold tracking-tighter uppercase">Clottius</a>
+      <p class="text-xs text-black/50 leading-relaxed tracking-wide">
+        {{ section.settings.brand_description }}
+      </p>
+    </div>
+
+    <!-- Shop -->
+    <div class="flex flex-col gap-4">
+      <span class="text-[10px] font-bold tracking-widest uppercase">Shop</span>
+      <ul class="flex flex-col gap-3">
+        {% for link in section.settings.shop_menu.links %}
+          <li>
+            <a href="{{ link.url }}" class="text-xs tracking-widest uppercase text-black/60 hover:opacity-50 transition-opacity duration-300">
+              {{ link.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Help -->
+    <div class="flex flex-col gap-4">
+      <span class="text-[10px] font-bold tracking-widest uppercase">Help</span>
+      <ul class="flex flex-col gap-3">
+        {% for link in section.settings.help_menu.links %}
+          <li>
+            <a href="{{ link.url }}" class="text-xs tracking-widest uppercase text-black/60 hover:opacity-50 transition-opacity duration-300">
+              {{ link.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="flex flex-col gap-4">
+      <span class="text-[10px] font-bold tracking-widest uppercase">Newsletter</span>
+      <p class="text-xs text-black/50 tracking-wide">Get updates on new drops.</p>
+      {% form 'customer' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="flex items-center border-b border-black pb-1 gap-2 mt-2">
+          <input
+            type="email"
+            name="contact[email]"
+            placeholder="Your email"
+            class="flex-1 bg-transparent text-xs tracking-widest uppercase placeholder-black/30 outline-none py-1"
+            required
+          >
+          <button type="submit" class="text-[10px] font-bold tracking-widest uppercase hover:opacity-50 transition-opacity duration-300 shrink-0">
+            Subscribe
+          </button>
+        </div>
+        {%- if form.posted_successfully? -%}
+          <p class="text-[10px] tracking-widest uppercase text-black/40 mt-3">Thank you for subscribing.</p>
+        {%- endif -%}
+      {% endform %}
+    </div>
+
   </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="footer__payment">
+  <!-- Bottom bar -->
+  <div class="border-t border-gray-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+    <p class="text-[10px] tracking-widest uppercase text-black/40">
+      &copy; {{ 'now' | date: '%Y' }} sebastian-arellano-dev. Built with Shopify &amp; Tailwind.
+    </p>
     {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
+      <div class="flex items-center gap-2">
+        {% for type in shop.enabled_payment_types %}
+          <span class="opacity-40 hover:opacity-100 transition-opacity duration-300 grayscale">
+            {{ type | payment_type_svg_tag }}
+          </span>
+        {% endfor %}
+      </div>
     {% endif %}
   </div>
-</footer>
 
-{% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
+</footer>
 
 {% schema %}
 {
   "name": "t:general.footer",
   "settings": [
     {
+      "type": "text",
+      "id": "brand_description",
+      "label": "Brand description",
+      "default": "Timeless essentials for the modern wardrobe. Defined by quality, not trends."
+    },
+    {
       "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "id": "shop_menu",
+      "label": "Shop menu"
+    },
+    {
+      "type": "link_list",
+      "id": "help_menu",
+      "label": "Help menu"
     },
     {
       "type": "checkbox",
       "id": "show_payment_icons",
-      "label": "t:labels.show_payment_icons",
+      "label": "Show payment icons",
       "default": true
     }
   ]
