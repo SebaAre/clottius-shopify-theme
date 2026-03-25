@@ -117,6 +117,58 @@
   </div>
 </section>
 
+{% stylesheet %}
+  /* Hide native number input spinners */
+  #quantity-input::-webkit-outer-spin-button,
+  #quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  #quantity-input {
+    -moz-appearance: textfield;
+  }
+
+  .shopify-payment-button {
+    margin-top: 0;
+  }
+
+  .shopify-payment-button__button {
+    border-radius: 0 !important;
+    font-size: 0.625rem !important;
+    letter-spacing: 0.3em !important;
+    text-transform: uppercase !important;
+    font-family: inherit !important;
+    min-height: unset !important;
+    padding: 1rem !important;
+  }
+
+  .shopify-payment-button__button--unbranded {
+    background-color: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+
+  .shopify-payment-button__button--unbranded:hover {
+    background-color: #000 !important;
+    color: #fff !important;
+  }
+
+  /* Branded buttons (Apple Pay, Google Pay, etc.) keep their brand colors
+     but get square corners and consistent sizing */
+  .shopify-payment-button__button--branded {
+    border-radius: 0 !important;
+  }
+
+  .shopify-payment-button__more-options {
+    font-size: 0.6rem !important;
+    letter-spacing: 0.15em !important;
+    text-transform: uppercase !important;
+    color: rgba(0, 0, 0, 0.4) !important;
+    font-family: inherit !important;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:general.product",
