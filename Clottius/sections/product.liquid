@@ -1,7 +1,7 @@
 <section class="bg-white px-4 py-12 md:px-6 md:py-20">
   <div class="max-w-6xl mx-auto">
 
-    <div class="flex flex-col md:flex-row md:gap-12 lg:gap-20">
+    <div class="flex flex-col md:flex-row md:items-stretch md:gap-12 lg:gap-20">
 
       {{- '<!-- Images -->' -}}
       <div class="w-full md:w-1/2">
@@ -28,9 +28,9 @@
       </div>
 
       {{- '<!-- Info + Form -->' -}}
-      <div class="w-full md:w-1/2 mt-8 md:mt-0 flex flex-col">
+      <div class="w-full md:w-1/2 mt-8 md:mt-0 flex flex-col md:justify-center">
 
-        <p class="text-[10px] tracking-[0.25em] uppercase text-gray-400 mb-2">{{ product.type | default: product.vendor }}</p>
+      
         <h1 class="text-sm tracking-[0.2em] uppercase font-medium text-black leading-relaxed">{{ product.title }}</h1>
 
         <div class="mt-3 flex items-baseline gap-3">

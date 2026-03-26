@@ -1559,6 +1559,14 @@ video {
     flex-direction: row;
   }
 
+  .md\:items-stretch {
+    align-items: stretch;
+  }
+
+  .md\:justify-center {
+    justify-content: center;
+  }
+
   .md\:gap-12 {
     gap: 3rem;
   }
