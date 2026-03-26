@@ -50,7 +50,8 @@
   },
   "general": {
     "accessibility": {
-      "navigation": "Main navigation"
+      "navigation": "Main navigation",
+      "close": "Close"
     }
   },
   "header": {
