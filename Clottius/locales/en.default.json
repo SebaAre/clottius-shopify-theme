@@ -48,6 +48,17 @@
     "password": "Password",
     "enter": "Enter"
   },
+  "general": {
+    "accessibility": {
+      "navigation": "Main navigation"
+    }
+  },
+  "header": {
+    "menu_open": "Open menu",
+    "menu_close": "Close menu",
+    "account": "Account",
+    "contact": "Contact"
+  },
   "search": {
     "title": "Search",
     "placeholder": "Search articles, pages, or products",

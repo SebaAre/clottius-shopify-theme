@@ -1,161 +1,206 @@
-<header class="site-header" data-template="{{ template.name }}">
-  <h2 class="header__title">
-    <a href="{{ routes.root_url }}">Clottius</a>
-  </h2>
+<header
+  class="site-header fixed top-0 left-0 right-0 z-50 h-16 px-6 md:px-8 grid grid-cols-3 items-center bg-black text-white border-b border-transparent transition-[background,color,border-color] duration-300"
+  data-template="{{ template.name }}"
+>
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
+  {%- comment -%} ── Left: hamburger (mobile) / nav (desktop) ── {%- endcomment -%}
+  <div class="flex items-center">
+
+    <button
+      id="menu-toggle"
+      type="button"
+      aria-label="{{ 'header.menu_open' | t }}"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      data-label-open="{{ 'header.menu_open' | t }}"
+      data-label-close="{{ 'header.menu_close' | t }}"
+      class="md:hidden flex flex-col justify-center gap-[5px] text-current bg-transparent border-0 cursor-pointer p-0"
+    >
+      <span class="hamburger-line block w-5 h-[1.5px] bg-current transition-all duration-300 origin-center"></span>
+      <span class="hamburger-line block w-5 h-[1.5px] bg-current transition-all duration-300 origin-center"></span>
+      <span class="hamburger-line block w-5 h-[1.5px] bg-current transition-all duration-300 origin-center"></span>
+    </button>
+
+    <nav class="hidden md:flex items-center gap-8" aria-label="{{ 'general.accessibility.navigation' | t }}">
+      {%- for link in section.settings.menu.links -%}
+        <a
+          href="{{ link.url }}"
+          class="text-[10px] uppercase tracking-[0.3em] font-normal text-current no-underline transition-opacity duration-200 hover:opacity-40"
+          {%- if link.active %} aria-current="page"{% endif %}
+        >
+          {{- link.title -}}
+        </a>
+      {%- endfor -%}
+    </nav>
+
   </div>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ section.settings.customer_account_menu }}" aria-label="Account">
-        {{ 'icon-account.svg' | inline_asset_content }}
-      </shopify-account>
-    {% endif %}
+  {%- comment -%} ── Center: logo ── {%- endcomment -%}
+  <div class="flex justify-center">
+    <a
+      href="{{ routes.root_url }}"
+      class="text-xl font-bold uppercase tracking-[0.5em] text-current no-underline transition-opacity duration-200 hover:opacity-70"
+      aria-label="{{ shop.name }}"
+    >
+      Clottius
+    </a>
+  </div>
 
-    <button id="open-cart" aria-label="Open cart" style="background:none;border:none;cursor:pointer;padding:0;">
-      {{ 'icon-cart.svg' | inline_asset_content }}
-      {% if cart.item_count > 0 %}
-        <span id="cart-count">{{ cart.item_count }}</span>
-      {% endif %}
+  {%- comment -%} ── Right: icons ── {%- endcomment -%}
+  <div class="flex items-center justify-end gap-5">
+
+    <button
+      type="button"
+      aria-label="{{ 'search.title' | t }}"
+      class="flex items-center justify-center text-current bg-transparent border-0 cursor-pointer p-0 transition-opacity duration-200 hover:opacity-40"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
     </button>
+
+    <button
+      id="open-cart"
+      type="button"
+      aria-label="{{ 'cart.title' | t }}"
+      class="relative flex items-center justify-center text-current bg-transparent border-0 cursor-pointer p-0 transition-opacity duration-200 hover:opacity-40"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      {%- if cart.item_count > 0 -%}
+        <span
+          id="cart-count"
+          class="absolute -top-1.5 -right-2 w-[18px] h-[18px] bg-white text-black text-[9px] font-semibold rounded-full flex items-center justify-center pointer-events-none transition-[background,color] duration-300"
+        >
+          {{- cart.item_count -}}
+        </span>
+      {%- endif -%}
+    </button>
+
   </div>
 </header>
 
-{% stylesheet %}
-  .site-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    height: 5rem;
-    padding: 0 var(--page-margin);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #000;
-    color: #fff;
-    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    border-bottom: 1px solid transparent;
-  }
+<div
+  id="mobile-menu"
+  class="fixed inset-0 z-40 pointer-events-none opacity-0 transition-opacity duration-500"
+  aria-hidden="true"
+>
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-2xl flex flex-col px-6 pt-24 pb-12">
 
+    <nav class="flex flex-col gap-8" aria-label="{{ 'general.accessibility.navigation' | t }}">
+      {%- for link in section.settings.menu.links -%}
+        <a
+          href="{{ link.url }}"
+          class="text-[11px] uppercase tracking-[0.4em] font-normal text-white no-underline transition-opacity duration-200 hover:opacity-40"
+          {%- if link.active %} aria-current="page"{% endif %}
+        >
+          {{- link.title -}}
+        </a>
+      {%- endfor -%}
+    </nav>
+
+    <div class="mt-auto flex flex-col gap-5">
+      <div class="w-6 h-px bg-white/20 mb-1"></div>
+      <a
+        href="{{ routes.account_url }}"
+        class="text-[9px] uppercase tracking-[0.4em] font-normal text-white no-underline opacity-60 transition-opacity duration-200 hover:opacity-100"
+      >
+        {{- 'header.account' | t -}}
+      </a>
+      <a
+        href="/pages/contact"
+        class="text-[9px] uppercase tracking-[0.4em] font-normal text-white no-underline opacity-60 transition-opacity duration-200 hover:opacity-100"
+      >
+        {{- 'header.contact' | t -}}
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Scroll state */
   .site-header.is-scrolled {
     background: #fff;
     color: #000;
     border-bottom-color: #f3f4f6;
   }
 
-  .site-header .header__title a {
-    font-size: 1.625rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: inherit;
-    transition: color 0.3s ease;
-  }
-  .site-header .header__menu {
-    display: flex;
-    gap: 2rem;
-  }
-  .site-header .header__menu a {
-    font-size: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: inherit;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-  }
-  .site-header .header__menu a:hover {
-    opacity: 1;
-  }
-  .site-header .header__icons {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-  }
-  .site-header .header__icons a,
-  .site-header .header__icons button {
-    position: relative;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .site-header #open-cart {
-    position: relative;
-  }
-
-  #cart-count {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    width: 18px;
-    height: 18px;
-    background: #fff;
-    color: #000;
-    font-size: 9px;
-    font-weight: 600;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    pointer-events: none;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-
   .site-header.is-scrolled #cart-count {
     background: #000;
     color: #fff;
   }
-  .site-header svg {
-    width: 2rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.5;
-    transition: stroke 0.3s ease;
+
+  /* Hamburger → X animation */
+  .menu-is-open .hamburger-line:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  .menu-is-open .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+  .menu-is-open .hamburger-line:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  /* Mobile drawer open state */
+  .menu-is-open #mobile-menu {
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  /* Prevent scroll while menu is open */
+  body.menu-is-open {
+    overflow: hidden;
   }
 {% endstylesheet %}
 
 {% javascript %}
   (function () {
-    const header = document.querySelector('.site-header');
-    if (!header) return;
+    const header     = document.querySelector('.site-header');
+    const toggle     = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
 
+    if (!header || !toggle) return;
+
+    // ── Scroll state ──────────────────────────────────────
     const isHomepage = header.dataset.template === 'index';
 
-    function update(animate) {
+    function updateScroll(animate) {
       const shouldScroll = !isHomepage || window.scrollY > 50;
-
-      if (!animate) {
-        header.style.transition = 'none';
-      }
-
-      if (shouldScroll) {
-        header.classList.add('is-scrolled');
-      } else {
-        header.classList.remove('is-scrolled');
-      }
-
-      if (!animate) {
-        // Force reflow then restore transition
-        header.offsetHeight;
-        header.style.transition = '';
-      }
+      if (!animate) header.style.transition = 'none';
+      header.classList.toggle('is-scrolled', shouldScroll);
+      if (!animate) { header.offsetHeight; header.style.transition = ''; }
     }
 
-    // Set initial state without animation to avoid flash on load
-    update(false);
+    updateScroll(false);
+    window.addEventListener('scroll', function () { updateScroll(true); }, { passive: true });
 
-    window.addEventListener('scroll', function () { update(true); }, { passive: true });
+    // ── Mobile menu ───────────────────────────────────────
+    function openMenu() {
+      document.body.classList.add('menu-is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', toggle.dataset.labelClose);
+      mobileMenu.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeMenu() {
+      document.body.classList.remove('menu-is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', toggle.dataset.labelOpen);
+      mobileMenu.setAttribute('aria-hidden', 'true');
+    }
+
+    toggle.addEventListener('click', function () {
+      document.body.classList.contains('menu-is-open') ? closeMenu() : openMenu();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeMenu();
+    });
   })();
 {% endjavascript %}
 
@@ -166,7 +211,8 @@
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "t:labels.menu",
+      "default": "main-menu"
     },
     {
       "type": "link_list",
