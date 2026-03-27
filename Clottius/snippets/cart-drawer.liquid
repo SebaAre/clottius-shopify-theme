@@ -3,12 +3,17 @@
 
   Triggered by clicking the button with id="open-cart" in the header.
   Uses the global `cart` object for initial render.
+  Supports real-time quantity updates via the Shopify Cart AJAX API.
 
   @example
   {% render 'cart-drawer' %}
 {% enddoc %}
 
-<div id="cart-drawer" role="dialog" aria-modal="true" aria-label="Cart">
+<script>
+  window.ClottiusMoneyFormat = {{ shop.money_format | json }};
+</script>
+
+<div id="cart-drawer" role="dialog" aria-modal="true" aria-label="{{ 'cart.title' | t }}">
 
   <div id="cart-overlay"></div>
 
@@ -16,56 +21,63 @@
 
     <div id="cart-panel-header">
       <h2 class="text-sm font-bold uppercase tracking-widest">
-        Your Cart
-        <span class="text-black/40">({{ cart.item_count }})</span>
+        {{ 'cart.title' | t }}
+        <span id="cart-item-count" class="text-black/40">({{ cart.item_count }})</span>
       </h2>
-      <button id="close-cart" aria-label="Close cart" class="text-xs uppercase tracking-widest text-black/50 hover:opacity-50 transition-opacity duration-200">
-        Close
+      <button id="close-cart" aria-label="{{ 'general.accessibility.close' | t }}" class="text-xs uppercase tracking-widest text-black/70 hover:opacity-50 transition-opacity duration-200">
+        {{ 'general.accessibility.close' | t }}
       </button>
     </div>
 
     <div id="cart-items">
       {% if cart.item_count > 0 %}
         {% for item in cart.items %}
-          <div class="flex gap-4">
+          <div class="cart-item flex gap-4" data-key="{{ item.key }}">
             <a href="{{ item.url }}" class="cart-item-image bg-gray-50 overflow-hidden flex-shrink-0">
               {{ item.image | image_url: width: 200 | image_tag: class: 'w-full h-full object-cover' }}
             </a>
             <div class="flex-1 flex flex-col justify-between py-1">
-              <div>
-                <p class="text-xs font-bold uppercase tracking-wide">{{ item.product.title }}</p>
+              <div class="cart-item-info">
+                <p class="text-xs font-bold uppercase tracking-widest leading-tight">{{ item.product.title }}</p>
                 {%- unless item.variant.title == 'Default Title' -%}
-                  <p class="text-xs uppercase tracking-widest text-black/40">{{ item.variant.title }}</p>
+                  <p class="text-xs uppercase tracking-widest text-black/40 leading-tight">{{ item.variant.title }}</p>
                 {%- endunless -%}
+                <p class="cart-item-price text-xs tracking-wide leading-tight mt-0.5">{{ item.final_line_price | money }}</p>
               </div>
-              <div class="flex items-center justify-between">
-                <p class="text-xs tracking-wide">{{ item.final_line_price | money }}</p>
-                <span class="text-xs text-black/40 uppercase tracking-widest">Qty {{ item.quantity }}</span>
+              <div class="flex items-center justify-between mt-2">
+                <div class="qty-selector" data-key="{{ item.key }}">
+                  <button class="qty-btn" data-action="decrease" aria-label="Decrease quantity">−</button>
+                  <span class="qty-value text-xs uppercase tracking-widest">{{ item.quantity }}</span>
+                  <button class="qty-btn" data-action="increase" aria-label="Increase quantity">+</button>
+                </div>
+                <button class="cart-remove-btn" data-key="{{ item.key }}" aria-label="{{ 'cart.remove' | t }}">
+                  {{ 'cart.remove' | t }}
+                </button>
               </div>
             </div>
           </div>
         {% endfor %}
       {% else %}
         <div class="cart-empty">
-          <p class="text-xs uppercase tracking-widest text-black/40">Your cart is empty.</p>
+          <p class="text-xs uppercase tracking-widest text-black/40">{{ 'cart.empty' | t }}</p>
         </div>
       {% endif %}
     </div>
 
-    {%- if cart.item_count > 0 -%}
-      <div id="cart-panel-footer">
-        <div class="flex justify-between items-center mb-5">
-          <span class="text-xs uppercase tracking-widest text-black/50">Subtotal</span>
-          <span class="text-sm font-bold">{{ cart.total_price | money }}</span>
-        </div>
-        <a href="{{ routes.checkout_url }}" class="cart-btn-checkout">
-          Checkout
-        </a>
-        <a href="{{ routes.cart_url }}" class="cart-btn-view">
-          View Cart
-        </a>
+    <div id="cart-panel-footer"{% if cart.item_count == 0 %} hidden{% endif %}>
+      <div class="flex justify-between items-center mb-4">
+        <span class="text-xs uppercase tracking-widest text-black/70">{{ 'cart.subtotal' | t }}</span>
+        <span id="cart-subtotal" class="text-sm font-bold">{{ cart.total_price | money }}</span>
       </div>
-    {%- endif -%}
+      {% form 'cart', cart %}
+        <button type="submit" name="checkout" class="cart-btn-checkout">
+          {{ 'cart.checkout' | t }}
+        </button>
+      {% endform %}
+      <a href="{{ routes.cart_url }}" class="cart-btn-view">
+        {{ 'cart.continue_shopping' | t }}
+      </a>
+    </div>
 
   </div>
 </div>
@@ -143,9 +155,71 @@
     height: 6rem;
   }
 
+  .cart-item-info {
+    line-height: 1.3;
+  }
+
+  /* Quantity selector */
+  .qty-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    border: 1px solid #e5e7eb;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .qty-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    line-height: 1;
+    color: #000;
+    padding: 0 0.125rem;
+    transition: opacity 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .qty-btn:hover {
+    opacity: 0.4;
+  }
+
+  .qty-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  .qty-value {
+    min-width: 1.25rem;
+    text-align: center;
+    display: inline-block;
+  }
+
+  .cart-remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(0, 0, 0, 0.3);
+    padding: 0;
+    transition: color 0.15s;
+  }
+
+  .cart-remove-btn:hover {
+    color: #000;
+  }
+
   #cart-panel-footer {
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem 1.5rem;
     border-top: 1px solid #f3f4f6;
+  }
+
+  #cart-panel-footer[hidden] {
+    display: none;
   }
 
   .cart-btn-checkout {
@@ -158,8 +232,10 @@
     font-size: 0.625rem;
     text-transform: uppercase;
     letter-spacing: 0.3em;
-    text-decoration: none;
+    border: none;
+    cursor: pointer;
     transition: background 0.2s;
+    text-decoration: none;
   }
 
   .cart-btn-checkout:hover {
@@ -190,7 +266,12 @@
     const drawer = document.getElementById('cart-drawer');
     const overlay = document.getElementById('cart-overlay');
     const closeBtn = document.getElementById('close-cart');
+    const cartItemsEl = document.getElementById('cart-items');
+    const cartFooter = document.getElementById('cart-panel-footer');
+    const cartSubtotal = document.getElementById('cart-subtotal');
+    const cartItemCount = document.getElementById('cart-item-count');
 
+    // --- Open / Close ---
     function openCart() {
       drawer.classList.add('is-open');
       document.body.style.overflow = 'hidden';
@@ -212,5 +293,121 @@
         openCart();
       }
     });
+
+    // --- Money formatting ---
+    function formatMoney(cents) {
+      var format = window.ClottiusMoneyFormat || '${{amount}}';
+      var amount = (cents / 100).toFixed(2);
+      return format
+        .replace(/\{\{\s*amount\s*\}\}/, amount)
+        .replace(/\{\{\s*amount_no_decimals\s*\}\}/, Math.round(cents / 100))
+        .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/, amount.replace('.', ','))
+        .replace(/\{\{\s*amount_no_decimals_with_comma_separator\s*\}\}/, String(Math.round(cents / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    }
+
+    // --- Cart AJAX update ---
+    function setLoading(selector, loading) {
+      var btns = selector.querySelectorAll('.qty-btn');
+      btns.forEach(function (btn) { btn.disabled = loading; });
+    }
+
+    function updateHeaderCount(count) {
+      var badge = document.getElementById('cart-count');
+      if (badge) badge.textContent = count;
+      if (cartItemCount) cartItemCount.textContent = '(' + count + ')';
+    }
+
+    function removeItemFromDOM(itemEl) {
+      itemEl.remove();
+      var remaining = cartItemsEl.querySelectorAll('.cart-item');
+      if (remaining.length === 0) {
+        var emptyEl = document.createElement('div');
+        emptyEl.className = 'cart-empty';
+        emptyEl.innerHTML = '<p class="text-xs uppercase tracking-widest text-black/40">' + (cartItemsEl.dataset.emptyText || 'Your cart is empty.') + '</p>';
+        cartItemsEl.appendChild(emptyEl);
+        if (cartFooter) cartFooter.hidden = true;
+      }
+    }
+
+    function handleQtyChange(e) {
+      var btn = e.target.closest('.qty-btn');
+      if (!btn) return;
+
+      var selector = btn.closest('.qty-selector');
+      if (!selector) return;
+
+      var key = selector.dataset.key;
+      var valueEl = selector.querySelector('.qty-value');
+      var currentQty = parseInt(valueEl.textContent, 10);
+      var action = btn.dataset.action;
+      var newQty = action === 'increase' ? currentQty + 1 : currentQty - 1;
+
+      if (newQty < 0) return;
+
+      setLoading(selector, true);
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: key, quantity: newQty })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (cart) {
+          var itemEl = cartItemsEl.querySelector('.cart-item[data-key="' + key + '"]');
+
+          if (newQty === 0) {
+            if (itemEl) removeItemFromDOM(itemEl);
+          } else {
+            valueEl.textContent = newQty;
+
+            // Update line price from cart response
+            var updatedItem = cart.items.find(function (i) { return i.key === key; });
+            if (updatedItem && itemEl) {
+              var priceEl = itemEl.querySelector('.cart-item-price');
+              if (priceEl) priceEl.textContent = formatMoney(updatedItem.final_line_price);
+            }
+
+            setLoading(selector, false);
+
+            if (cartFooter) cartFooter.hidden = false;
+          }
+
+          // Update subtotal
+          if (cartSubtotal) cartSubtotal.textContent = formatMoney(cart.total_price);
+          updateHeaderCount(cart.item_count);
+        })
+        .catch(function () {
+          setLoading(selector, false);
+        });
+    }
+
+    function handleRemove(e) {
+      var btn = e.target.closest('.cart-remove-btn');
+      if (!btn) return;
+
+      var key = btn.dataset.key;
+      btn.disabled = true;
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: key, quantity: 0 })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (cart) {
+          var itemEl = cartItemsEl.querySelector('.cart-item[data-key="' + key + '"]');
+          if (itemEl) removeItemFromDOM(itemEl);
+          if (cartSubtotal) cartSubtotal.textContent = formatMoney(cart.total_price);
+          updateHeaderCount(cart.item_count);
+        })
+        .catch(function () {
+          btn.disabled = false;
+        });
+    }
+
+    if (cartItemsEl) {
+      cartItemsEl.addEventListener('click', handleQtyChange);
+      cartItemsEl.addEventListener('click', handleRemove);
+    }
   })();
 {% endjavascript %}
