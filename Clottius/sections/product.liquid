@@ -49,7 +49,7 @@
           </div>
         {% endif %}
 
-        {% form 'product', product %}
+        {% form 'product', product, id: 'product-form' %}
           <div class="mt-8 flex flex-col gap-4">
 
             {% if product.variants.size > 1 %}
@@ -97,7 +97,7 @@
 
             <div class="flex flex-col gap-3 mt-2">
               {% if current_variant.available %}
-                <button type="submit" class="w-full bg-black text-white text-[10px] tracking-[0.3em] uppercase py-4 hover:bg-gray-900 transition-colors duration-200">
+                <button type="submit" id="add-to-cart-btn" class="w-full bg-black text-white text-[10px] tracking-[0.3em] uppercase py-4 hover:bg-gray-900 transition-colors duration-200">
                   Add to cart
                 </button>
               {% else %}
@@ -105,7 +105,6 @@
                   Sold out
                 </button>
               {% endif %}
-              {{ form | payment_button }}
             </div>
 
           </div>
@@ -129,45 +128,71 @@
     -moz-appearance: textfield;
   }
 
-  .shopify-payment-button {
-    margin-top: 0;
-  }
-
-  .shopify-payment-button__button {
-    border-radius: 0 !important;
-    font-size: 0.625rem !important;
-    letter-spacing: 0.3em !important;
-    text-transform: uppercase !important;
-    font-family: inherit !important;
-    min-height: unset !important;
-    padding: 1rem !important;
-  }
-
-  .shopify-payment-button__button--unbranded {
-    background-color: #fff !important;
-    color: #000 !important;
-    border: 1px solid #000 !important;
-  }
-
-  .shopify-payment-button__button--unbranded:hover {
-    background-color: #000 !important;
-    color: #fff !important;
-  }
-
-  /* Branded buttons (Apple Pay, Google Pay, etc.) keep their brand colors
-     but get square corners and consistent sizing */
-  .shopify-payment-button__button--branded {
-    border-radius: 0 !important;
-  }
-
-  .shopify-payment-button__more-options {
-    font-size: 0.6rem !important;
-    letter-spacing: 0.15em !important;
-    text-transform: uppercase !important;
-    color: rgba(0, 0, 0, 0.4) !important;
-    font-family: inherit !important;
-  }
 {% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var form = document.getElementById('product-form');
+    var addBtn = document.getElementById('add-to-cart-btn');
+    if (!form || !addBtn) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var originalText = addBtn.textContent;
+      addBtn.disabled = true;
+      addBtn.textContent = '...';
+
+      var formData = new FormData(form);
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: parseInt(formData.get('id'), 10),
+          quantity: parseInt(formData.get('quantity'), 10) || 1
+        })
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('add_failed');
+          return fetch(window.location.href);
+        })
+        .then(function (res) { return res.text(); })
+        .then(function (html) {
+          var parser = new DOMParser();
+          var doc = parser.parseFromString(html, 'text/html');
+
+          var cartItemsEl = document.getElementById('cart-items');
+          var cartFooter = document.getElementById('cart-panel-footer');
+          var cartItemCount = document.getElementById('cart-item-count');
+          var headerBadge = document.getElementById('cart-count');
+
+          var newItems = doc.getElementById('cart-items');
+          var newFooter = doc.getElementById('cart-panel-footer');
+          var newCount = doc.getElementById('cart-item-count');
+          var newBadge = doc.getElementById('cart-count');
+
+          if (cartItemsEl && newItems) cartItemsEl.innerHTML = newItems.innerHTML;
+          if (cartFooter && newFooter) {
+            cartFooter.innerHTML = newFooter.innerHTML;
+            cartFooter.hidden = newFooter.hasAttribute('hidden');
+          }
+          if (cartItemCount && newCount) cartItemCount.textContent = newCount.textContent;
+          if (headerBadge && newBadge) headerBadge.textContent = newBadge.textContent;
+
+          if (window.ClottiusCart) window.ClottiusCart.open();
+        })
+        .catch(function () {
+          // fallback: submit the form normally
+          form.submit();
+        })
+        .finally(function () {
+          addBtn.disabled = false;
+          addBtn.textContent = originalText;
+        });
+    });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
